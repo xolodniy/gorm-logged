@@ -103,7 +103,9 @@ func initLogTrace(trace logrus.Fields) logrus.Fields {
 func (m *Model) Preload(column string, conditions ...interface{}) *Model {
 	trace := initLogTrace(m.logTrace)
 	trace["preloadColumn-"+column] = column
-	trace["preloadConditions-"+column] = conditions
+	if len(conditions) > 0 {
+		trace["preloadConditions-"+column] = conditions
+	}
 	return &Model{db: m.db, logTrace: trace, preloads: append(m.preloads, struct {
 		field      string
 		conditions []interface{}
@@ -142,8 +144,7 @@ func (m *Model) Unscoped() *Model {
 // Model is gorm interface func
 func (m *Model) Model(value interface{}) *Model {
 	trace := initLogTrace(m.logTrace)
-	// trace["modelValueType"] = fmt.Sprintf("%T", value)
-	trace["modelValueType"] = pretty.Print(value)
+	trace["model"] = pretty.Print(value)
 	return &Model{db: m.db.Model(value), logTrace: trace, preloads: m.preloads}
 }
 
@@ -151,7 +152,9 @@ func (m *Model) Model(value interface{}) *Model {
 func (m *Model) Select(query interface{}, args ...interface{}) *Model {
 	trace := initLogTrace(m.logTrace)
 	trace["selectQuery"] = query
-	trace["selectArgs"] = pretty.Print(args)
+	if len(args) > 0 {
+		trace["selectArgs"] = pretty.Print(args)
+	}
 	return &Model{db: m.db.Select(query, args...), logTrace: trace, preloads: m.preloads}
 }
 
@@ -434,7 +437,9 @@ func (m *Model) Group(name string) *Model {
 func (m *Model) Having(query interface{}, args ...interface{}) *Model {
 	trace := initLogTrace(m.logTrace)
 	trace["havingQuery"] = query
-	trace["havingArgs"] = args
+	if len(args) > 0 {
+		trace["havingArgs"] = args
+	}
 	return &Model{db: m.db.Having(query, args...), logTrace: trace, preloads: m.preloads}
 }
 
@@ -453,7 +458,9 @@ func (m *Model) exec(sql string, values ...interface{}) error {
 func (m *Model) raw(sql string, values ...interface{}) *Model {
 	trace := initLogTrace(m.logTrace)
 	trace["rawSql"] = sql
-	trace["rawValues"] = values
+	if len(values) > 0 {
+		trace["rawValues"] = values
+	}
 	return &Model{db: m.db.Raw(sql, values...), logTrace: trace, preloads: m.preloads}
 }
 
