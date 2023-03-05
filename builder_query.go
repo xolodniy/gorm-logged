@@ -88,7 +88,7 @@ type QueryBuilder interface {
 	Joins(query string, args ...interface{}) *Model
 	UpdateByFilter(filter interface{}, values interface{}) error
 
-	exec(sql string, values ...interface{}) error
+	// exec(sql string, values ...interface{}) error
 }
 
 func initLogTrace(trace logrus.Fields) logrus.Fields {
